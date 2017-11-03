@@ -97,15 +97,22 @@ int main (int argc, char* argv[]){
 
 
   char filename[1024];
+  char dirName[1024];
   strcpy(filename, "");
+  strcpy(dirName, "");
 
   char input;
   while (1){
 
     // Display help text
     printf("\'r\' - Run tracker\n");
-    printf("\'s\' - Switch parameters\n");
+    printf("\'s\' - Switch all parameters\n");
     printf("\'w\' - Switch weight\n");
+    printf("\'i\' - Switch initials\n");
+    printf("\'f\' - Switch number of frames\n");
+    printf("\'d\' - Switch starting distance\n");
+    printf("\'m\' - Switch number of markers\n");
+    printf("\'e\' - Switch exercise\n");
     printf("\'q\' - Quit\n");
     printf("Enter command: ");
 
@@ -124,8 +131,33 @@ int main (int argc, char* argv[]){
     }
 
     // Ge new load
+    else if(input == 'i'){
+      getInfo("initials", p -> initials);
+    }
+
+    // Ge new load
     else if(input == 'w'){
       getInfo("weight", p -> weight);
+    }
+
+    // Ge new load
+    else if(input == 'f'){
+      getInfo("number of frames", p -> nFrames);
+    }
+
+    // Ge new load
+    else if(input == 'm'){
+      getInfo("number of markers", p -> nReflexes);
+    }
+
+    // Ge new load
+    else if(input == 'd'){
+      getInfo("distance", p -> distance);
+    }
+
+    // Ge new load
+    else if(input == 'e'){
+      getInfo("exercise", p -> exercise);
     }
 
     // Run tracking program
@@ -138,22 +170,47 @@ int main (int argc, char* argv[]){
 
       else if(pid == 0){
 
-        // Generate filename
-
+        // Generate directory and filename
         strcat(filename, p->initials);
         strcat(filename, "_");
         strcat(filename, p -> exercise);
         strcat(filename, "_");
+
+        strcat(dirName, filename);
+        strcat(dirName, date);
+        strcat(dirName, "/");
+
         strcat(filename, p -> weight);
         strcat(filename, "_");
         strcat(filename, date);
 
+        strcat(dirName, filename);
+
+        char fileArg[1024];
+        strcpy(fileArg,"");
+        strcat(fileArg,"filename=");
+        strcat(fileArg,dirName);
+
+        char frameArg[1024];
+        strcpy(frameArg,"");
+        strcat(frameArg,"nFrames=");
+        strcat(frameArg,p->nFrames);
+
+        char refArg[1024];
+        strcpy(refArg,"");
+        strcat(refArg,"nMarkers=");
+        strcat(refArg, p->nReflexes);
+
+        char distArg[1024];
+        strcpy(distArg,"");
+        strcat(distArg,"StartDist=");
+        strcat(distArg, p-> distance);
+
         // Arguments for tracking program
-        char* args[] = {"./track", filename, p -> nFrames,
-        p -> distance, p-> nReflexes, NULL};
+        char* args[] = {"./track", "test", frameArg,
+        distArg, refArg};
 
         execvp(args[0], args);
-
       }
       else{
         waitpid(pid, NULL,0);
